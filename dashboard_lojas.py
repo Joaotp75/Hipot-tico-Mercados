@@ -10,8 +10,7 @@ import plotly.express as px
 import plotly.graph_objects as go
 
 # Carregar os dados da planilha
-file_path = r'C:\Users\joaot\Downloads\Case 2 - Base de Dados.xlsx'
-df = pd.read_excel(file_path, sheet_name='Lojas')
+df = pd.read_excel('Case 2 - Base de Dados.xlsx', sheet_name='Lojas')
 
 # Calcular métricas adicionais
 df["Receita/m²"] = df["Receita Bruta 2023"] / df["Área da loja (m²)"]
