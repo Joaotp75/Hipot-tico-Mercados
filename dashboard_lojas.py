@@ -10,39 +10,30 @@ import plotly.express as px
 import plotly.graph_objects as go
 
 # Carregar os dados da planilha
-df = pd.read_excel('Case 2 - Base de Dados.xlsx', sheet_name='Lojas')
+file_path = r'C:\Users\joaot\Downloads\Case 2 - Base de Dados.xlsx'
+df = pd.read_excel(file_path, sheet_name='Lojas')
+
+# Calcular métricas adicionais
+df["Receita/m²"] = df["Receita Bruta 2023"] / df["Área da loja (m²)"]
+df["EBITDA/m²"] = df["EBITDA 2023"] / df["Área da loja (m²)"]
+df["Receita/habitante"] = df["Receita Bruta 2023"] / df["População"]
+df["EBITDA/habitante"] = df["EBITDA 2023"] / df["População"]
 
 # Configurar a interface do Streamlit
-st.title("Hipotético Mercados")
+st.title("Análise de Lojas e Cidades")
 
-# Checklist para selecionar as cidades
-cidades_selecionadas = st.multiselect(
-    'Selecione as Cidades:',
-    options=df['Cidade'].unique()
-)
+# Seletor de cidades e lojas (fora das abas)
+cidades_selecionadas = st.multiselect('Selecione as Cidades:', options=df['Cidade'].unique(), key='cidades_selecionadas')
+lojas_disponiveis = df[df['Cidade'].isin(cidades_selecionadas)]['Loja'].unique() if cidades_selecionadas else df['Loja'].unique()
+lojas_selecionadas = st.multiselect('Selecione as Lojas:', options=lojas_disponiveis, key='lojas_visualizacao')
 
-# Filtrar lojas com base nas cidades selecionadas
-if cidades_selecionadas:
-    lojas_disponiveis = df[df['Cidade'].isin(cidades_selecionadas)]['Loja'].unique()
-    lojas_selecionadas = st.multiselect(
-        'Selecione as Lojas:',
-        options=lojas_disponiveis
-    )
+# Criar abas para separar as funcionalidades
+tab1, tab2 = st.tabs(["Visualização e Comparação", "Ordenação por Desempenho"])
 
+with tab1:
+    st.header("Visualização e Comparação Direta")
+    
     if not lojas_selecionadas:
-        st.subheader("Resumo da Cidade")
-
-        # Resumo da cidade
-        num_lojas = df[df['Cidade'].isin(cidades_selecionadas)]['Loja'].nunique()
-        area_total_lojas = df[df['Cidade'].isin(cidades_selecionadas)]['Área da loja (m²)'].sum()
-        tamanho_cidade = df[df['Cidade'].isin(cidades_selecionadas)]['Tamanho cidade(Quilômetros quadrados)'].max()
-        populacao_cidade = df[df['Cidade'].isin(cidades_selecionadas)]['População'].max()
-
-        st.write(f"**Número total de lojas:** {num_lojas}")
-        st.write(f"**Área total das lojas:** {area_total_lojas:.2f} m²")
-        st.write(f"**Tamanho da cidade:** {tamanho_cidade:.2f} km²")
-        st.write(f"**Número de habitantes da cidade:** {populacao_cidade}")
-
         st.subheader("Resultados Agregados por Cidade")
 
         receita_por_ano_cidade = df[df['Cidade'].isin(cidades_selecionadas)].groupby('Cidade')[['Receita Bruta 2018', 'Receita Bruta 2019', 'Receita Bruta 2020',
@@ -69,6 +60,7 @@ if cidades_selecionadas:
         ebitda_por_m2_cidade.columns = [f"EBITDA/m² {cidade}" for cidade in ebitda_por_m2_cidade.columns]
 
         # Tabelas e gráficos
+
         st.write("### Receita Bruta por Cidade")
         st.dataframe(receita_por_ano_cidade.T.rename_axis("Ano", axis=1), use_container_width=True)
         fig_receita_cidade = px.bar(receita_por_ano_cidade.T, title='Receita Bruta por Cidade', barmode='group')
@@ -100,17 +92,6 @@ if cidades_selecionadas:
         st.plotly_chart(fig_ebitda_m2_cidade, use_container_width=True)
 
     else:
-        st.subheader("Resumo da Loja")
-
-        # Resumo da loja
-        tamanho_loja = df[df['Loja'].isin(lojas_selecionadas)]['Tamanho cidade(Quilômetros quadrados)'].unique()[0]
-        area_loja = df[df['Loja'].isin(lojas_selecionadas)]['Área da loja (m²)'].unique()[0]
-        populacao_loja = df[df['Loja'].isin(lojas_selecionadas)]['População'].unique()[0]
-
-        st.write(f"**Tamanho da cidade:** {tamanho_loja:.2f} km²")
-        st.write(f"**Área da loja:** {area_loja:.2f} m²")
-        st.write(f"**Número de habitantes da cidade:** {populacao_loja}")
-
         st.subheader("Métricas de Eficiência por Loja")
 
         df_filtrado = df[df['Loja'].isin(lojas_selecionadas)]
@@ -139,6 +120,7 @@ if cidades_selecionadas:
         ebitda_por_m2_loja.columns = [f"EBITDA/m² {loja}" for loja in ebitda_por_m2_loja.columns]
 
         # Tabelas e gráficos
+
         st.write("### Receita Bruta por Loja")
         st.dataframe(receita_bruta_por_ano.rename_axis("Ano", axis=0), use_container_width=True)
         fig_receita_loja = px.bar(receita_bruta_por_ano, title='Receita Bruta por Loja', barmode='group')
@@ -168,4 +150,70 @@ if cidades_selecionadas:
         st.dataframe(ebitda_por_m2_loja.rename_axis("Ano", axis=0), use_container_width=True)
         fig_ebitda_m2_loja = px.bar(ebitda_por_m2_loja, title='EBITDA/m² por Loja', barmode='group')
         st.plotly_chart(fig_ebitda_m2_loja, use_container_width=True)
+
+with tab2:
+    st.header("Ordenação por Desempenho")
+    
+    # Seletor de Métrica para Classificação
+    st.subheader("Classificação das Lojas/Cidades por Métrica")
+    metric = st.selectbox("Selecione a métrica para classificação:", [
+        "Receita Bruta 2023", "EBITDA 2023", 
+        "Receita/m²", "EBITDA/m²", 
+        "Receita/habitante", "EBITDA/habitante"
+    ], key='metric_selection')
+    ordem = st.selectbox("Ordem de classificação:", ["Crescente", "Decrescente"], key='order_selection')
+
+    # Classificar e exibir
+    df_sorted = df.sort_values(by=[metric], ascending=(ordem == "Crescente"))
+    st.write(f"Ranking das lojas/cidades baseado em {metric}:")
+    st.dataframe(df_sorted[['Loja', 'Cidade', metric]])
+
+    # Análise Comparativa Automática
+    st.subheader("Análise Comparativa Automática")
+    for loja in lojas_selecionadas:
+        loja_data = df[df["Loja"] == loja]
+        receita_media = df["Receita Bruta 2023"].mean()
+        ebitda_media = df["EBITDA 2023"].mean()
+        receita_por_m2_media = df["Receita/m²"].mean()
+        ebitda_por_m2_media = df["EBITDA/m²"].mean()
+        receita_por_hab_media = df["Receita/habitante"].mean()
+        ebitda_por_hab_media = df["EBITDA/habitante"].mean()
+
+        analise = f"Análise da loja {loja}: "
+        if loja_data["Receita Bruta 2023"].iloc[0] > receita_media:
+            analise += "Receita maior do que a média. "
+        else:
+            analise += "Receita menor do que a média. "
+
+        if loja_data["EBITDA 2023"].iloc[0] > ebitda_media:
+            analise += "EBITDA maior do que a média. "
+        else:
+            analise += "EBITDA menor do que a média. "
+
+        if loja_data["Receita/m²"].iloc[0] > receita_por_m2_media:
+            analise += "Receita/m² maior do que a média. "
+        else:
+            analise += "Receita/m² menor do que a média. "
+
+        if loja_data["EBITDA/m²"].iloc[0] > ebitda_por_m2_media:
+            analise += "EBITDA/m² maior do que a média. "
+        else:
+            analise += "EBITDA/m² menor do que a média. "
+
+        if loja_data["Receita/habitante"].iloc[0] > receita_por_hab_media:
+            analise += "Receita/habitante maior do que a média. "
+        else:
+            analise += "Receita/habitante menor do que a média. "
+
+        if loja_data["EBITDA/habitante"].iloc[0] > ebitda_por_hab_media:
+            analise += "EBITDA/habitante maior do que a média. "
+        else:
+            analise += "EBITDA/habitante menor do que a média. "
+
+        if loja_data["Receita Bruta 2023"].iloc[0] > loja_data["Receita Bruta 2022"].iloc[0]:
+            analise += "Receita crescente. "
+        else:
+            analise += "Receita decrescente. "
+
+        st.write(analise)
 
