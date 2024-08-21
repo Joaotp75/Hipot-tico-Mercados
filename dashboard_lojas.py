@@ -9,9 +9,9 @@ import pandas as pd
 import plotly.express as px
 
 # Carregar os dados das planilhas "Lojas" e "Cidades"
-file_path = r'C:\Users\joaot\Downloads\Case 2 - Base de Dados.xlsx'
-df_lojas = pd.read_excel(file_path, sheet_name='Lojas')
-df_cidades = pd.read_excel(file_path, sheet_name='Cidades')
+
+df_lojas = pd.read_excel('Case 2 - Base de Dados.xlsx', sheet_name='Lojas')
+df_cidades = pd.read_excel('Case 2 - Base de Dados.xlsx', sheet_name='Cidades')
 
 # Configurar a interface do Streamlit
 st.title("Análise de Lojas e Cidades")
