@@ -13,7 +13,7 @@ df_lojas = pd.read_excel('Case 2 - Base de Dados.xlsx', sheet_name='Lojas')
 df_cidades = pd.read_excel('Case 2 - Base de Dados.xlsx', sheet_name='Cidades')
 
 # Configurar a interface do Streamlit
-st.title("Análise de Lojas e Cidades")
+st.title("Hipotético Mercados")
 
 # Criar abas para separar as funcionalidades
 tab1, tab2 = st.tabs(["Visualização e Comparação", "Ordenação por Desempenho"])
@@ -127,34 +127,59 @@ with tab1:
 
 with tab2:
     st.header("Ordenação por Desempenho")
-    
+
+    # Adicionar uma seleção para escolher entre Lojas e Cidades
+    tipo_selecao = st.selectbox("Deseja classificar por:", ["Lojas", "Cidades"], key='tipo_selecao')
+
     # Seletor de ano
     ano_selecionado = st.selectbox("Selecione o ano:", [2018, 2019, 2020, 2021, 2022, 2023], key='ano_selection')
     
-    # Ajustar as métricas disponíveis com base no ano selecionado
-    if ano_selecionado in [2018, 2019, 2020]:
-        metric_options = [
-            f"Receita Bruta {ano_selecionado}",
-            f"Receita/m2 {ano_selecionado}",
-            f"Receita/habitante {ano_selecionado}",
-        ]
-    else:
-        metric_options = [
-            f"Receita Bruta {ano_selecionado}",
-            f"EBITDA {ano_selecionado}",
-            f"Receita/m2 {ano_selecionado}",
-            f"EBITDA/m2 {ano_selecionado}",
-            f"Receita/habitante {ano_selecionado}",
-            f"EBITDA/habitante {ano_selecionado}",
-            f"Margem EBITDA {ano_selecionado}"
-        ]
+    # Ajustar as métricas disponíveis com base no ano selecionado e na escolha entre lojas ou cidades
+    if tipo_selecao == "Lojas":
+        if ano_selecionado in [2018, 2019, 2020]:
+            metric_options = [
+                f"Receita Bruta {ano_selecionado}",
+                f"Receita/m2 {ano_selecionado}",
+                f"Receita/habitante {ano_selecionado}",
+            ]
+        else:
+            metric_options = [
+                f"Receita Bruta {ano_selecionado}",
+                f"EBITDA {ano_selecionado}",
+                f"Receita/m2 {ano_selecionado}",
+                f"EBITDA/m2 {ano_selecionado}",
+                f"Receita/habitante {ano_selecionado}",
+                f"EBITDA/habitante {ano_selecionado}",
+                f"Margem EBITDA {ano_selecionado}"
+            ]
+    else:  # Cidades
+        if ano_selecionado in [2018, 2019, 2020]:
+            metric_options = [
+                f"Receita Bruta {ano_selecionado}",
+                f"Receita/m2 {ano_selecionado}",
+                f"Receita/habitante {ano_selecionado}",
+            ]
+        else:
+            metric_options = [
+                f"Receita Bruta {ano_selecionado}",
+                f"EBITDA {ano_selecionado}",
+                f"Receita/m2 {ano_selecionado}",
+                f"EBITDA/m2 {ano_selecionado}",
+                f"Receita/habitante {ano_selecionado}",
+                f"EBITDA/habitante {ano_selecionado}",
+                f"Margem EBITDA {ano_selecionado}"
+            ]
     
     metric = st.selectbox("Selecione a métrica para classificação:", metric_options, key='metric_selection')
     ordem = st.selectbox("Ordem de classificação:", ["Crescente", "Decrescente"], key='order_selection')
 
     # Classificar e exibir
-    df_sorted = df_lojas if "Loja" in metric else df_cidades
-    df_sorted = df_sorted.sort_values(by=[metric], ascending=(ordem == "Crescente"))
-    st.write(f"Ranking das lojas/cidades baseado em {metric}:")
-    st.dataframe(df_sorted[['Loja', 'Cidade', metric]] if "Loja" in metric else df_sorted[['CIDADES', metric]])
+    if tipo_selecao == "Lojas":
+        df_sorted = df_lojas.sort_values(by=[metric], ascending=(ordem == "Crescente"))
+        st.write(f"Ranking das lojas baseado em {metric}:")
+        st.dataframe(df_sorted[['Loja', 'Cidade', metric]])
+    else:  # Cidades
+        df_sorted = df_cidades.sort_values(by=[metric], ascending=(ordem == "Crescente"))
+        st.write(f"Ranking das cidades baseado em {metric}:")
+        st.dataframe(df_sorted[['CIDADES', metric]])
 
