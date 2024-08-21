@@ -43,10 +43,16 @@ with tab1:
         st.plotly_chart(fig_receita_cidade, use_container_width=True)
 
         st.write("### EBITDA Bruto por Cidade")
-        ebitda_por_ano_cidade = df_filtrado[[col for col in df_cidades.columns if 'EBITDA' in col and not 'habitante' in col and not 'm2' in col]]
+        ebitda_por_ano_cidade = df_filtrado[[col for col in df_cidades.columns if 'EBITDA' in col and not 'habitante' in col and not 'm2' in col and not 'Margem' in col]]
         st.dataframe(ebitda_por_ano_cidade.T.rename_axis("Ano", axis=1), use_container_width=True)
         fig_ebitda_cidade = px.bar(ebitda_por_ano_cidade.T, title='EBITDA Bruto por Cidade', barmode='group')
         st.plotly_chart(fig_ebitda_cidade, use_container_width=True)
+
+        st.write("### Margem EBITDA por Cidade")
+        margem_ebitda_cidade = df_filtrado[[col for col in df_cidades.columns if 'Margem EBITDA' in col]]
+        st.dataframe(margem_ebitda_cidade.T.rename_axis("Ano", axis=1), use_container_width=True)
+        fig_margem_ebitda_cidade = px.bar(margem_ebitda_cidade.T, title='Margem EBITDA por Cidade', barmode='group')
+        st.plotly_chart(fig_margem_ebitda_cidade, use_container_width=True)
 
         st.write("### Receita/habitante por Cidade")
         receita_hab_cidade = df_filtrado[[col for col in df_cidades.columns if 'Receita/habitante' in col]]
@@ -72,12 +78,6 @@ with tab1:
         fig_ebitda_m2_cidade = px.bar(ebitda_m2_cidade.T, title='EBITDA/m² por Cidade', barmode='group')
         st.plotly_chart(fig_ebitda_m2_cidade, use_container_width=True)
 
-        st.write("### Margem EBITDA por Cidade")
-        margem_ebitda_cidade = df_filtrado[[col for col in df_cidades.columns if 'Margem EBITDA' in col]]
-        st.dataframe(margem_ebitda_cidade.T.rename_axis("Ano", axis=1), use_container_width=True)
-        fig_margem_ebitda_cidade = px.bar(margem_ebitda_cidade.T, title='Margem EBITDA por Cidade', barmode='group')
-        st.plotly_chart(fig_margem_ebitda_cidade, use_container_width=True)
-
     # Visualização por loja
     else:
         st.subheader("Métricas de Eficiência por Loja")
@@ -91,10 +91,16 @@ with tab1:
         st.plotly_chart(fig_receita_loja, use_container_width=True)
 
         st.write("### EBITDA Bruto por Loja")
-        ebitda_por_ano = df_filtrado[[col for col in df_lojas.columns if 'EBITDA' in col and not 'habitante' in col and not 'm2' in col]].T
+        ebitda_por_ano = df_filtrado[[col for col in df_lojas.columns if 'EBITDA' in col and not 'habitante' in col and not 'm2' in col and not 'Margem' in col]].T
         st.dataframe(ebitda_por_ano.rename_axis("Ano", axis=0), use_container_width=True)
         fig_ebitda_loja = px.bar(ebitda_por_ano, title='EBITDA Bruto por Loja', barmode='group')
         st.plotly_chart(fig_ebitda_loja, use_container_width=True)
+
+        st.write("### Margem EBITDA por Loja")
+        margem_ebitda_loja = df_filtrado[[col for col in df_lojas.columns if 'Margem EBITDA' in col]].T
+        st.dataframe(margem_ebitda_loja.rename_axis("Ano", axis=0), use_container_width=True)
+        fig_margem_ebitda_loja = px.bar(margem_ebitda_loja, title='Margem EBITDA por Loja', barmode='group')
+        st.plotly_chart(fig_margem_ebitda_loja, use_container_width=True)
 
         st.write("### Receita/habitante por Loja")
         receita_hab_loja = df_filtrado[[col for col in df_lojas.columns if 'Receita/habitante' in col]].T
@@ -119,13 +125,6 @@ with tab1:
         st.dataframe(ebitda_m2_loja.rename_axis("Ano", axis=0), use_container_width=True)
         fig_ebitda_m2_loja = px.bar(ebitda_m2_loja, title='EBITDA/m² por Loja', barmode='group')
         st.plotly_chart(fig_ebitda_m2_loja, use_container_width=True)
-
-        st.write("### Margem EBITDA por Loja")
-        margem_ebitda_loja = df_filtrado[[col for col in df_lojas.columns if 'Margem EBITDA' in col]].T
-        st.dataframe(margem_ebitda_loja.rename_axis("Ano", axis=0), use_container_width=True)
-        fig_margem_ebitda_loja = px.bar(margem_ebitda_loja, title='Margem EBITDA por Loja', barmode='group')
-        st.plotly_chart(fig_margem_ebitda_loja, use_container_width=True)
-
 with tab2:
     st.header("Ordenação por Desempenho")
     
