@@ -179,7 +179,9 @@ with tab2:
         st.write(f"Ranking das lojas baseado em {metric}:")
         st.dataframe(df_sorted[['Loja', 'Cidade', metric]])
     else:  # Cidades
-        df_sorted = df_cidades.sort_values(by=[metric], ascending=(ordem == "Crescente"))
+        # Remover a linha TOTAL antes de ordenar
+        df_sorted = df_cidades[df_cidades['CIDADES'] != 'TOTAL']
+        df_sorted = df_sorted.sort_values(by=[metric], ascending=(ordem == "Crescente"))
         st.write(f"Ranking das cidades baseado em {metric}:")
         st.dataframe(df_sorted[['CIDADES', metric]])
 
