@@ -43,7 +43,7 @@ with tab1:
         st.plotly_chart(fig_receita_cidade, use_container_width=True)
 
         st.write("### EBITDA Bruto por Cidade")
-        ebitda_por_ano_cidade = df_filtrado[[col for col in df_cidades.columns if 'EBITDA' in col and 'Sum of' in col]]
+        ebitda_por_ano_cidade = df_filtrado[[col for col in df_cidades.columns if 'EBITDA' in col and not 'habitante' in col and not 'm2' in col]]
         st.dataframe(ebitda_por_ano_cidade.T.rename_axis("Ano", axis=1), use_container_width=True)
         fig_ebitda_cidade = px.bar(ebitda_por_ano_cidade.T, title='EBITDA Bruto por Cidade', barmode='group')
         st.plotly_chart(fig_ebitda_cidade, use_container_width=True)
@@ -73,7 +73,7 @@ with tab1:
         st.plotly_chart(fig_ebitda_m2_cidade, use_container_width=True)
 
         st.write("### Margem EBITDA por Cidade")
-        margem_ebitda_cidade = df_filtrado[[col for col in df_cidades.columns if 'MargemEBITDA' in col]]
+        margem_ebitda_cidade = df_filtrado[[col for col in df_cidades.columns if 'Margem EBITDA' in col]]
         st.dataframe(margem_ebitda_cidade.T.rename_axis("Ano", axis=1), use_container_width=True)
         fig_margem_ebitda_cidade = px.bar(margem_ebitda_cidade.T, title='Margem EBITDA por Cidade', barmode='group')
         st.plotly_chart(fig_margem_ebitda_cidade, use_container_width=True)
@@ -121,7 +121,7 @@ with tab1:
         st.plotly_chart(fig_ebitda_m2_loja, use_container_width=True)
 
         st.write("### Margem EBITDA por Loja")
-        margem_ebitda_loja = df_filtrado[[col for col in df_lojas.columns if 'MargemEBITDA' in col]].T
+        margem_ebitda_loja = df_filtrado[[col for col in df_lojas.columns if 'Margem EBITDA' in col]].T
         st.dataframe(margem_ebitda_loja.rename_axis("Ano", axis=0), use_container_width=True)
         fig_margem_ebitda_loja = px.bar(margem_ebitda_loja, title='Margem EBITDA por Loja', barmode='group')
         st.plotly_chart(fig_margem_ebitda_loja, use_container_width=True)
@@ -136,26 +136,26 @@ with tab2:
     if ano_selecionado in [2018, 2019, 2020]:
         metric_options = [
             f"Receita Bruta {ano_selecionado}",
-            f"Receita/m² {ano_selecionado}",
-            f"Receita/habitante{str(ano_selecionado)[-2:]}",
+            f"Receita/m2 {ano_selecionado}",
+            f"Receita/habitante {ano_selecionado}",
         ]
     else:
         metric_options = [
             f"Receita Bruta {ano_selecionado}",
             f"EBITDA {ano_selecionado}",
-            f"Receita/m² {ano_selecionado}",
-            f"EBITDA/m²{str(ano_selecionado)[-2:]}",
-            f"Receita/habitante{str(ano_selecionado)[-2:]}",
-            f"EBITDA/habitante{str(ano_selecionado)[-2:]}",
-            f"MargemEBITDA{ano_selecionado}"
+            f"Receita/m2 {ano_selecionado}",
+            f"EBITDA/m2 {ano_selecionado}",
+            f"Receita/habitante {ano_selecionado}",
+            f"EBITDA/habitante {ano_selecionado}",
+            f"Margem EBITDA {ano_selecionado}"
         ]
     
     metric = st.selectbox("Selecione a métrica para classificação:", metric_options, key='metric_selection')
     ordem = st.selectbox("Ordem de classificação:", ["Crescente", "Decrescente"], key='order_selection')
 
     # Classificar e exibir
-    df_sorted = df_lojas if "Receita" in metric else df_cidades
+    df_sorted = df_lojas if "Loja" in metric else df_cidades
     df_sorted = df_sorted.sort_values(by=[metric], ascending=(ordem == "Crescente"))
     st.write(f"Ranking das lojas/cidades baseado em {metric}:")
-    st.dataframe(df_sorted[['Loja', 'Cidade', metric]] if "Receita" in metric else df_sorted[['CIDADES', metric]])
+    st.dataframe(df_sorted[['Loja', metric]] if "Loja" in metric else df_sorted[['CIDADES', metric]])
 
