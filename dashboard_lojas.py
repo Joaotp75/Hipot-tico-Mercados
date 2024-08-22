@@ -15,7 +15,7 @@ df_cidades = pd.read_excel('Case 2 - Base de Dados.xlsx', sheet_name='Cidades')
 # Configurar a interface do Streamlit
 st.title("Hipotético Mercados")
 
-# Criar abas para separar as funcionalidades
+# Criar abas para separar as funçoes
 tab1, tab2 = st.tabs(["Visualização e Comparação", "Ordenação por Desempenho"])
 
 with tab1:
@@ -28,7 +28,7 @@ with tab1:
     # Seleção de lojas
     lojas_selecionadas = st.multiselect('Selecione as Lojas:', options=lojas_disponiveis, key='lojas_visualizacao')
 
-    # Tabela de Resumo de Cidades ou Lojas
+    # Tabela de Resum
     st.subheader("Resumo das Cidades ou Lojas Selecionadas")
     
     if not lojas_selecionadas:
@@ -142,7 +142,7 @@ with tab1:
 with tab2:
     st.header("Ordenação por Desempenho")
 
-    # Adicionar uma seleção para escolher entre Lojas e Cidades
+    # seleção para escolher entre Lojas e Cidades
     tipo_selecao = st.selectbox("Deseja classificar por:", ["Lojas", "Cidades"], key='tipo_selecao')
 
     # Seletor de ano
@@ -166,7 +166,7 @@ with tab2:
                 f"EBITDA/habitante {ano_selecionado}",
                 f"Margem EBITDA {ano_selecionado}"
             ]
-    else:  # Cidades
+    else:  
         if ano_selecionado in [2018, 2019, 2020]:
             metric_options = [
                 f"Receita Bruta {ano_selecionado}",
@@ -192,7 +192,7 @@ with tab2:
         df_sorted = df_lojas.sort_values(by=[metric], ascending=(ordem == "Crescente"))
         st.write(f"Ranking das lojas baseado em {metric}:")
         st.dataframe(df_sorted[['Loja', 'Cidade', metric]])
-        fig_ranking_lojas = px.bar(df_sorted, x='Loja', y=metric, title=f"Ranking das Lojas por {metric}")
+        fig_ranking_lojas = px.bar(df_sorted, x=metric, y='Loja', title=f"Ranking das Lojas por {metric}", orientation='h')
         st.plotly_chart(fig_ranking_lojas, use_container_width=True)
     else:  # Cidades
         # Remover a linha TOTAL antes de ordenar
@@ -200,6 +200,6 @@ with tab2:
         df_sorted = df_sorted.sort_values(by=[metric], ascending=(ordem == "Crescente"))
         st.write(f"Ranking das cidades baseado em {metric}:")
         st.dataframe(df_sorted[['CIDADES', metric]])
-        fig_ranking_cidades = px.bar(df_sorted, x='CIDADES', y=metric, title=f"Ranking das Cidades por {metric}")
+        fig_ranking_cidades = px.bar(df_sorted, x=metric, y='CIDADES', title=f"Ranking das Cidades por {metric}", orientation='h')
         st.plotly_chart(fig_ranking_cidades, use_container_width=True)
 
