@@ -192,7 +192,7 @@ with tab2:
         df_sorted = df_lojas.sort_values(by=[metric], ascending=(ordem == "Crescente"))
         st.write(f"Ranking das lojas baseado em {metric}:")
         st.dataframe(df_sorted[['Loja', 'Cidade', metric]])
-        fig_ranking_lojas = px.bar(df_sorted, x=metric, y='Loja', title=f"Ranking das Lojas por {metric}", orientation='h')
+        fig_ranking_lojas = px.bar(df_sorted, x=metric, y='Loja', title=f"Ranking das Lojas por {metric}", orientation='h', height=800)
         st.plotly_chart(fig_ranking_lojas, use_container_width=True)
     else:  # Cidades
         # Remover a linha TOTAL antes de ordenar
@@ -200,6 +200,6 @@ with tab2:
         df_sorted = df_sorted.sort_values(by=[metric], ascending=(ordem == "Crescente"))
         st.write(f"Ranking das cidades baseado em {metric}:")
         st.dataframe(df_sorted[['CIDADES', metric]])
-        fig_ranking_cidades = px.bar(df_sorted, x=metric, y='CIDADES', title=f"Ranking das Cidades por {metric}", orientation='h')
+        fig_ranking_cidades = px.bar(df_sorted, x=metric, y='CIDADES', title=f"Ranking das Cidades por {metric}", orientation='h', height=800)
         st.plotly_chart(fig_ranking_cidades, use_container_width=True)
 
